@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ article.title }}</title>
+</head>
+<body>
+    <h2>{{ article.title }}</h2>
+    <h4>By {{ article.author }}</h4>
+
+    {% if article.image %}
+        <img src="{{ article.image }}" width="300"><br><br>
+    {% endif %}
+
+    <p>{{ article.body }}</p>
+</body>
+</html>
