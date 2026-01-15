@@ -68,3 +68,10 @@ Microsoft Entra ID (Azure Active Directory) authentication was explored and part
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
+
+3. Set the required environment variables for:
+   --Azure SQL Database
+   --Azure Blob Storage
+
+4. Run the application:
+   python application.py
