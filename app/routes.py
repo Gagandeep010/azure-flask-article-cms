@@ -41,11 +41,7 @@ def create_article():
         image.filename = secure_filename(image.filename)
 
         # ✅ Upload to Azure Blob
-        image_url = upload_image(
-            image,
-            current_app.config["BLOB_CONNECTION_STRING"],
-            current_app.config["BLOB_CONTAINER"]
-        )
+        image_url = upload_image(image)
 
         # ✅ Save article
         article = Article(

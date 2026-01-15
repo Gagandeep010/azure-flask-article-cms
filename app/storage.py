@@ -1,29 +1,38 @@
-from azure.storage.blob import BlobServiceClient
-import uuid
 import os
+import uuid
+from azure.storage.blob import BlobServiceClient, ContentSettings
 
-def upload_image(file, connection_string, container_name):
-    blob_service = BlobServiceClient.from_connection_string(connection_string)
-    container_client = blob_service.get_container_client(container_name)
+BLOB_CONNECTION_STRING = os.environ.get("BLOB_CONNECTION_STRING")
+BLOB_CONTAINER = os.environ.get("BLOB_CONTAINER")
 
-    # Ensure temp folder exists
-    os.makedirs("temp", exist_ok=True)
+blob_service_client = BlobServiceClient.from_connection_string(
+    BLOB_CONNECTION_STRING
+)
 
-    filename = f"{uuid.uuid4()}-{file.filename}"
-    temp_path = os.path.join("temp", filename)
+def upload_image(image):
+    # Safety checks
+    if not image or image.filename == "":
+        raise ValueError("Invalid image")
 
-    # 1️⃣ Save locally
-    file.save(temp_path)
+    # Reset stream pointer (CRITICAL)
+    image.stream.seek(0)
 
-    # 2️⃣ Upload using file handle (THIS IS THE KEY)
-    with open(temp_path, "rb") as data:
-        container_client.upload_blob(
-            name=filename,
-            data=data,
-            overwrite=True
+    # Generate safe unique blob name
+    extension = os.path.splitext(image.filename)[1]
+    blob_name = f"{uuid.uuid4()}{extension}"
+
+    blob_client = blob_service_client.get_blob_client(
+        container=BLOB_CONTAINER,
+        blob=blob_name
+    )
+
+    blob_client.upload_blob(
+        image.stream,
+        overwrite=True,
+        content_settings=ContentSettings(
+            content_type=image.content_type
         )
+    )
 
-    # 3️⃣ Cleanup
-    os.remove(temp_path)
+    return blob_client.url
 
-    return f"{container_client.url}/{filename}"

@@ -10,7 +10,7 @@ class Config:
     SQL_PASSWORD = os.environ.get("SQL_PASSWORD")
 
     params = urllib.parse.quote_plus(
-        f"Driver=ODBC Driver 17 for SQL Server;"
+        f"Driver=ODBC Driver 18 for SQL Server;"
         f"Server={SQL_SERVER};"
         f"Database={SQL_DATABASE};"
         f"UID={SQL_USERNAME};"
